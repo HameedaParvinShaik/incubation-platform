@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - IncubatorHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .sidebar .brand span {
+            color: #f1c40f;
+        }
+        .sidebar .brand p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar .nav-link .badge {
+            margin-left: auto;
+        }
+        .sidebar hr {
+            border-color: rgba(255,255,255,0.1);
+            margin: 10px 20px;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .card-custom {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-custom .card-body {
+            padding: 25px;
+        }
+        
+        .stat-card {
+            border-left: 4px solid #4f46e5;
+            background: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            height: 100%;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .stat-card .label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .stat-card .icon {
+            font-size: 2.5rem;
+            opacity: 0.3;
+        }
+        
+        .settings-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+        .settings-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #4f46e5;
+        }
+        .settings-card .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        
+        .text-purple {
+            color: #9b59b6;
+        }
+        .bg-purple {
+            background: #9b59b6;
+        }
+        .bg-opacity-10 {
+            opacity: 0.1;
+        }
+        
+        .nav-pills .nav-link {
+            border-radius: 10px;
+            padding: 12px 20px;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+        .nav-pills .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        .nav-pills .nav-link.active {
+            background: #4f46e5;
+            color: white;
+        }
+        .nav-pills .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .form-label {
+            font-weight: 500;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            min-width: 300px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            .sidebar .brand h3,
+            .sidebar .brand p,
+            .sidebar .nav-link span {
+                display: none;
+            }
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+                margin: 3px 8px;
+            }
+            .sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            .main-content {
+                margin-left: 70px;
+                padding: 15px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toast Container -->
+<div class="toast-container">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto"><i class="fas fa-info-circle"></i> Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">Notification message</div>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Admin Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/dashboard">
+            <i class="fas fa-th-large"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="/users">
+            <i class="fas fa-users"></i> <span>Users</span>
+            <span class="badge bg-primary" th:text="${totalUsers}">0</span>
+        </a>
+        <a class="nav-link" href="/startups">
+            <i class="fas fa-building"></i> <span>Startups</span>
+            <span class="badge bg-warning text-dark" th:text="${pendingStartups}">0</span>
+        </a>
+        <a class="nav-link" href="/mentor/admin-list">
+            <i class="fas fa-chalkboard-teacher"></i> <span>Mentors</span>
+            <span class="badge bg-success" th:text="${totalMentors}">0</span>
+        </a>
+        <a class="nav-link" href="/funding">
+            <i class="fas fa-hand-holding-usd"></i> <span>Funding</span>
+        </a>
+        <a class="nav-link" href="/reports">
+            <i class="fas fa-file-alt"></i> <span>Reports</span>
+        </a>
+        <a class="nav-link active" href="/settings">
+            <i class="fas fa-cog"></i> <span>Settings</span>
+        </a>
+        <hr>
+        <a class="nav-link" href="/profile">
+            <i class="fas fa-user-circle"></i> <span>Profile</span>
+        </a>
+        <a class="nav-link text-danger" href="/logout" onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-cog text-primary"></i> Settings</h4>
+            <small class="text-muted">Welcome, <span th:text="${userEmail}"></span></small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-danger me-2">ADMIN</span>
+            <div class="avatar" th:text="${#strings.substring(userEmail, 0, 1).toUpperCase()}">A</div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Settings Navigation -->
+    <div class="card-custom">
+        <div class="card-body">
+            <ul class="nav nav-pills mb-4" id="settingsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab">
+                        <i class="fas fa-cog"></i> General
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profile-tab" data-bs-toggle="pill" data-bs-target="#profile" type="button" role="tab">
+                        <i class="fas fa-user"></i> Profile
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="pill" data-bs-target="#security" type="button" role="tab">
+                        <i class="fas fa-lock"></i> Security
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#notifications" type="button" role="tab">
+                        <i class="fas fa-bell"></i> Notifications
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="system-tab" data-bs-toggle="pill" data-bs-target="#system" type="button" role="tab">
+                        <i class="fas fa-server"></i> System
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="settingsTabContent">
+
+                <!-- ✅ General Settings - FIXED with Thymeleaf variables -->
+                <div class="tab-pane fade show active" id="general" role="tabpanel">
+                    <h5 class="mb-3"><i class="fas fa-cog me-2 text-primary"></i> General Settings</h5>
+                    <form th:action="@{/settings/general/update}" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Platform Name</label>
+                                <input type="text" class="form-control" name="platformName" th:value="${platformName}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Platform Email</label>
+                                <input type="email" class="form-control" name="platformEmail" th:value="${platformEmail}" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Platform Description</label>
+                                <textarea class="form-control" name="platformDescription" rows="2" th:text="${platformDescription}"></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Profile Settings -->
+                <div class="tab-pane fade" id="profile" role="tabpanel">
+                    <h5 class="mb-3"><i class="fas fa-user me-2 text-primary"></i> Profile Settings</h5>
+                    <form th:action="@{/settings/profile}" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="firstName" value="Admin" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="lastName" value="User" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" name="email" th:value="${userEmail}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" name="phone" value="+1 234 567 8900">
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Profile</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <h5 class="mb-3"><i class="fas fa-lock me-2 text-primary"></i> Security Settings</h5>
+                    <form th:action="@{/settings/security}" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" class="form-control" name="currentPassword" placeholder="Enter current password" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" name="newPassword" placeholder="Enter new password" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" name="confirmPassword" placeholder="Confirm new password" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Two-Factor Authentication</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="twoFactor">
+                                    <label class="form-check-label" for="twoFactor">Enable 2FA</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Security</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel">
+                    <h5 class="mb-3"><i class="fas fa-bell me-2 text-primary"></i> Notification Settings</h5>
+                    <form id="notificationForm" onsubmit="event.preventDefault(); saveNotificationSettings();">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                            <label class="form-check-label" for="emailNotifications">
+                                                <strong>Email Notifications</strong>
+                                                <br>
+                                                <small class="text-muted">Receive email notifications for important updates</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="startupAlerts" checked>
+                                            <label class="form-check-label" for="startupAlerts">
+                                                <strong>Startup Alerts</strong>
+                                                <br>
+                                                <small class="text-muted">Get notified when new startups register</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="fundingAlerts" checked>
+                                            <label class="form-check-label" for="fundingAlerts">
+                                                <strong>Funding Alerts</strong>
+                                                <br>
+                                                <small class="text-muted">Get notified about new funding requests</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="mentorAlerts">
+                                            <label class="form-check-label" for="mentorAlerts">
+                                                <strong>Mentor Alerts</strong>
+                                                <br>
+                                                <small class="text-muted">Get notified when mentors sign up</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i> Save Preferences
+                                </button>
+                                <button type="reset" class="btn btn-secondary ms-2">
+                                    <i class="fas fa-undo me-2"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- System Settings -->
+                <div class="tab-pane fade" id="system" role="tabpanel">
+                    <h5 class="mb-3"><i class="fas fa-server me-2 text-primary"></i> System Settings</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-database me-2 text-primary"></i> System Information</h6>
+                                    <hr>
+                                    <p><strong>Version:</strong> 1.0.0</p>
+                                    <p><strong>Environment:</strong> Production</p>
+                                    <p><strong>Database:</strong> MySQL</p>
+                                    <p><strong>Cache:</strong> Enabled</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-shield-alt me-2 text-primary"></i> Security Status</h6>
+                                    <hr>
+                                    <p><span class="badge bg-success"><i class="fas fa-check"></i> SSL Enabled</span></p>
+                                    <p><span class="badge bg-success"><i class="fas fa-check"></i> Firewall Active</span></p>
+                                    <p><span class="badge bg-warning"><i class="fas fa-clock"></i> Last Security Scan: 2 days ago</span></p>
+                                    <p><span class="badge bg-success"><i class="fas fa-check"></i> Backup: Daily</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-tools me-2 text-primary"></i> System Actions</h6>
+                                    <hr>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-warning" onclick="alert('Cache cleared successfully!')">
+                                            <i class="fas fa-broom"></i> Clear Cache
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="if(confirm('Are you sure you want to restart the system?')) { alert('System restart initiated!'); }">
+                                            <i class="fas fa-sync-alt"></i> Restart System
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="alert('Backup started! You will be notified when complete.')">
+                                            <i class="fas fa-database"></i> Backup Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+
+<script>
+// =============================================
+// SETTINGS PAGE - JavaScript
+// =============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Settings page loaded');
+});
+
+// =============================================
+// SAVE NOTIFICATION SETTINGS
+// =============================================
+function saveNotificationSettings() {
+    const emailNotifications = document.getElementById('emailNotifications').checked;
+    const startupAlerts = document.getElementById('startupAlerts').checked;
+    const fundingAlerts = document.getElementById('fundingAlerts').checked;
+    const mentorAlerts = document.getElementById('mentorAlerts').checked;
+    
+    const settings = {
+        emailNotifications: emailNotifications,
+        startupAlerts: startupAlerts,
+        fundingAlerts: fundingAlerts,
+        mentorAlerts: mentorAlerts
+    };
+    
+    console.log('📧 Saving notification settings:', settings);
+    showToast('Notification preferences saved successfully!', 'success');
+}
+
+// =============================================
+// TOAST FUNCTION
+// =============================================
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('liveToast');
+    const toastBody = document.getElementById('toastMessage');
+    const toastHeader = toast?.querySelector('.toast-header');
+    
+    if (!toast || !toastBody) return;
+    
+    const colors = {
+        success: '#2ecc71',
+        warning: '#f39c12',
+        danger: '#e74c3c',
+        info: '#3498db'
+    };
+    
+    if (toastHeader) {
+        toastHeader.style.borderBottom = `3px solid ${colors[type] || colors.info}`;
+    }
+    toastBody.textContent = message;
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
+
+console.log('✅ Settings page loaded successfully!');
+</script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Mentees - IncubatorHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #2d3436, #0984e3);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 { font-weight: 700; font-size: 1.5rem; }
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .brand p { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i { margin-right: 12px; width: 20px; text-align: center; }
+        .sidebar .nav-link .badge { margin-left: auto; }
+        .sidebar hr { border-color: rgba(255,255,255,0.1); margin: 10px 20px; }
+        
+        .main-content { margin-left: 260px; padding: 30px; min-height: 100vh; }
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .user-info { display: flex; align-items: center; gap: 15px; }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0984e3;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .stat-card {
+            border-left: 4px solid #0984e3;
+            background: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            height: 100%;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: #1e293b; }
+        .stat-card .label { color: #64748b; font-size: 0.9rem; }
+        
+        .card-custom {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-custom .card-body { padding: 25px; }
+        
+        .mentee-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+            background: white;
+        }
+        .mentee-card:hover {
+            border-color: #0984e3;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .brand h3, .sidebar .brand p, .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 12px; margin: 3px 8px; }
+            .sidebar .nav-link i { margin-right: 0; font-size: 1.2rem; }
+            .main-content { margin-left: 70px; padding: 15px; }
+            .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Mentor Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/mentor/dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a class="nav-link active" href="/mentor/mentees"><i class="fas fa-users"></i> My Mentees</a>
+        <a class="nav-link" href="/mentor/sessions"><i class="fas fa-calendar"></i> Sessions</a>
+        <a class="nav-link" href="/mentor/reviews"><i class="fas fa-star"></i> Reviews</a>
+        <hr>
+        <a class="nav-link" href="/mentor/profile"><i class="fas fa-user-circle"></i> Profile</a>
+        <a class="nav-link text-danger" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-users text-primary"></i> My Mentees</h4>
+            <small class="text-muted">Welcome, <span th:text="${userEmail}">Mentor</span></small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-success me-2">MENTOR</span>
+            <div class="avatar" th:text="${#strings.substring(userEmail, 0, 1).toUpperCase()}">M</div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Stats -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #0984e3;">
+                <div><div class="label">Total Mentees</div><div class="number" th:text="${myMenteesCount}">0</div></div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #10b981;">
+                <div><div class="label">Active</div><div class="number">0</div></div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #f59e0b;">
+                <div><div class="label">Completed</div><div class="number">0</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mentees List -->
+    <div class="card-custom">
+        <div class="card-header">
+            <span><i class="fas fa-list me-2 text-primary"></i> Assigned Mentees</span>
+            <span class="badge bg-primary" th:text="${myMenteesCount} + ' mentees'">0 mentees</span>
+        </div>
+        <div class="card-body">
+            <div th:each="startup : ${startups}" class="mentee-card">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h6 class="mb-1" th:text="${startup.name}">Startup Name</h6>
+                        <p class="text-muted small mb-1" th:text="${startup.category} ?: 'N/A'">Category</p>
+                        <span th:switch="${startup.status}" class="badge">
+                            <span th:case="'PENDING'" class="badge bg-warning text-dark">PENDING</span>
+                            <span th:case="'APPROVED'" class="badge bg-success">APPROVED</span>
+                            <span th:case="'ACTIVE'" class="badge bg-primary">ACTIVE</span>
+                            <span th:case="'IN_PROGRESS'" class="badge bg-info">IN PROGRESS</span>
+                            <span th:case="'COMPLETED'" class="badge bg-secondary">COMPLETED</span>
+                            <span th:case="'REJECTED'" class="badge bg-danger">REJECTED</span>
+                            <span th:case="*" class="badge bg-secondary" th:text="${startup.status}">UNKNOWN</span>
+                        </span>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/mentor/mentees/{id}(id=${startup.id})}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            <a th:href="@{/mentor/milestones?startupId={id}(id=${startup.id})}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-flag-checkered"></i> Milestones
+                            </a>
+                            <a th:href="@{/mentor/sessions?startupId={id}(id=${startup.id})}" class="btn btn-sm btn-success">
+                                <i class="fas fa-calendar"></i> Schedule
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.isEmpty(startups)}" class="text-center text-muted py-4">
+                <i class="fas fa-inbox fa-3x d-block mb-2"></i>
+                <p>No mentees assigned yet.</p>
+                <p class="small">Mentees will appear here once a manager assigns startups to you.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

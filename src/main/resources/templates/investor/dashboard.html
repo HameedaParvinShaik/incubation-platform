@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Dashboard - IncubatorHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 { font-weight: 700; font-size: 1.5rem; }
+        .sidebar .brand span { color: #ffd700; }
+        .sidebar .brand p { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i { margin-right: 12px; width: 20px; text-align: center; }
+        .sidebar .nav-link .badge { margin-left: auto; }
+        .sidebar hr { border-color: rgba(255,255,255,0.1); margin: 10px 20px; }
+        
+        .main-content { margin-left: 260px; padding: 30px; min-height: 100vh; }
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .user-info { display: flex; align-items: center; gap: 15px; }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #00b894;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .stat-card {
+            border-left: 4px solid #00b894;
+            background: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            height: 100%;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .stat-card .number { font-size: 2rem; font-weight: 700; color: #1e293b; }
+        .stat-card .label { color: #64748b; font-size: 0.9rem; }
+        .stat-card .icon { font-size: 2.5rem; opacity: 0.3; }
+        
+        .card-custom {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-custom .card-body { padding: 25px; }
+        
+        .startup-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+            background: white;
+            height: 100%;
+        }
+        .startup-card:hover {
+            border-color: #00b894;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .progress-bar-custom { height: 8px; border-radius: 4px; }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .brand h3, .sidebar .brand p, .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 12px; margin: 3px 8px; }
+            .sidebar .nav-link i { margin-right: 0; font-size: 1.2rem; }
+            .main-content { margin-left: 70px; padding: 15px; }
+            .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Investor Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link active" href="/investor/dashboard">
+            <i class="fas fa-th-large"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="/investor/discover">
+            <i class="fas fa-search"></i> <span>Discover</span>
+        </a>
+        <a class="nav-link" href="/investor/investments">
+            <i class="fas fa-hand-holding-usd"></i> <span>My Investments</span>
+            <span class="badge bg-warning text-dark" th:text="${myInvestments}">0</span>
+        </a>
+        <hr>
+        <a class="nav-link" href="/investor/profile">
+            <i class="fas fa-user-circle"></i> <span>Profile</span>
+        </a>
+        <a class="nav-link text-danger" href="/logout" onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-chart-line text-primary"></i> Investor Dashboard</h4>
+            <small class="text-muted">Welcome, <span th:text="${userEmail}"></span></small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-success me-2">INVESTOR</span>
+            <div class="avatar" th:text="${#strings.substring(userEmail, 0, 1).toUpperCase()}">I</div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Stats -->
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="stat-card" style="border-color: #3498db;">
+                <div><div class="label">Total Startups</div><div class="number" th:text="${totalStartups}">0</div></div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="stat-card" style="border-color: #2ecc71;">
+                <div><div class="label">Approved</div><div class="number" th:text="${approvedStartups}">0</div></div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="stat-card" style="border-color: #00b894;">
+                <div><div class="label">Active</div><div class="number" th:text="${activeStartups}">0</div></div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="stat-card" style="border-color: #f39c12;">
+                <div><div class="label">My Investments</div><div class="number" th:text="${myInvestments}">0</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Startups for Investment -->
+    <div class="card-custom">
+        <div class="card-header">
+            <span><i class="fas fa-rocket me-2 text-primary"></i> Top Startups for Investment</span>
+            <a href="/investor/discover" class="btn btn-sm btn-primary">View All</a>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4" th:each="s : ${topStartups}">
+                    <div class="startup-card">
+                        <h6 class="mb-1" th:text="${s.name}">Startup</h6>
+                        <p class="text-muted small mb-1" th:text="${s.category} ?: 'N/A'">Category</p>
+                        <span th:switch="${s.status}" class="badge mb-2">
+                            <span th:case="'APPROVED'" class="badge bg-success">APPROVED</span>
+                            <span th:case="'ACTIVE'" class="badge bg-primary">ACTIVE</span>
+                            <span th:case="'PENDING'" class="badge bg-warning text-dark">PENDING</span>
+                            <span th:case="'REJECTED'" class="badge bg-danger">REJECTED</span>
+                            <span th:case="'COMPLETED'" class="badge bg-info">COMPLETED</span>
+                            <span th:case="*" class="badge bg-secondary" th:text="${s.status}">UNKNOWN</span>
+                        </span>
+                        
+                        <!-- Amount Raised -->
+                        <div class="d-flex justify-content-between mt-2">
+                            <span class="text-muted small">Amount Raised</span>
+                            <span th:if="${s.totalFundingAmount != null and s.totalFundingAmount > 0}" class="text-success fw-bold">
+                                $<span th:text="${#numbers.formatDecimal(s.totalFundingAmount, 0, 2)}">0.00</span>
+                            </span>
+                            <span th:unless="${s.totalFundingAmount != null and s.totalFundingAmount > 0}" class="text-muted">
+                                <i class="fas fa-info-circle"></i> No investments yet
+                            </span>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a th:href="@{/investor/startups/{id}(id=${s.id})}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            <!-- ✅ FIXED: Using th:data with numeric ID -->
+                            <button class="btn btn-sm btn-success invest-btn" th:data-id="${s.id}">
+                                <i class="fas fa-hand-holding-usd"></i> Invest
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(topStartups)}" class="col-12">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x d-block mb-2"></i>
+                        <p>No startups available for investment right now.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// ✅ FIXED: Using event delegation for dynamic buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Use event delegation on the parent container
+    document.querySelector('.card-body').addEventListener('click', function(e) {
+        const button = e.target.closest('.invest-btn');
+        if (button) {
+            const id = button.getAttribute('data-id');
+            if (id) {
+                investNow(id);
+            }
+        }
+    });
+});
+
+function investNow(id) {
+    // Only 2 prompts: Amount and Purpose
+    const amount = prompt('Enter amount to invest ($):');
+    if (amount && !isNaN(amount) && parseFloat(amount) > 0) {
+        const purpose = prompt('Purpose of investment:');
+        if (purpose && purpose.trim() !== '') {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/investor/invest';
+            
+            const fields = {
+                'startupId': id,
+                'amount': amount,
+                'purpose': purpose
+            };
+            
+            for (const [key, value] of Object.entries(fields)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        } else if (purpose !== null) {
+            alert('Please enter a purpose for the investment!');
+        }
+    } else if (amount !== null) {
+        alert('Please enter a valid amount greater than 0!');
+    }
+}
+</script>
+</body>
+</html>

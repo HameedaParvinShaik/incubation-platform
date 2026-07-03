@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Startup - Manager Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 { font-weight: 700; font-size: 1.5rem; }
+        .sidebar .brand span { color: #f1c40f; }
+        .sidebar .brand p { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i { margin-right: 12px; width: 20px; text-align: center; }
+        .sidebar .nav-link .badge { margin-left: auto; }
+        .sidebar hr { border-color: rgba(255,255,255,0.1); margin: 10px 20px; }
+        
+        .main-content { margin-left: 260px; padding: 30px; min-height: 100vh; }
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            color: #1a2980;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .topbar .user-info { display: flex; align-items: center; gap: 15px; }
+        
+        .card-custom {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+        }
+        .card-custom .card-body { padding: 25px; }
+        
+        .form-label { font-weight: 500; }
+        .required { color: #dc3545; }
+        .mentor-assigned {
+            background: #d1fae5;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .brand h3, .sidebar .brand p, .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 12px; margin: 3px 8px; }
+            .sidebar .nav-link i { margin-right: 0; font-size: 1.2rem; }
+            .main-content { margin-left: 70px; padding: 15px; }
+            .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Manager Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/manager/dashboard">
+            <i class="fas fa-th-large"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link active" href="/manager/startups">
+            <i class="fas fa-building"></i> <span>Startups</span>
+        </a>
+        <a class="nav-link" href="/manager/mentors">
+            <i class="fas fa-chalkboard-teacher"></i> <span>Mentors</span>
+        </a>
+        <a class="nav-link" href="/manager/funding">
+            <i class="fas fa-hand-holding-usd"></i> <span>Funding</span>
+        </a>
+        <a class="nav-link" href="/manager/reports">
+            <i class="fas fa-file-alt"></i> <span>Reports</span>
+        </a>
+        <hr>
+        <a class="nav-link" href="/profile">
+            <i class="fas fa-user-circle"></i> <span>Profile</span>
+        </a>
+        <a class="nav-link text-danger" href="/logout" onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-edit text-primary"></i> Edit Startup</h4>
+            <small class="text-muted">Welcome, <span th:text="${userEmail}">Manager</span></small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-primary me-2">MANAGER</span>
+            <div class="avatar" th:text="${#strings.substring(userEmail, 0, 1).toUpperCase()}">M</div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card-custom">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="fas fa-building me-2 text-primary"></i> Edit Startup</h5>
+        </div>
+        <div class="card-body">
+            <!-- ✅ EDIT FORM -->
+            <form th:action="@{/manager/startups/{id}/edit(id=${startup.id})}" method="post">
+                <input type="hidden" name="id" th:value="${startup.id}">
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Startup Name <span class="required">*</span></label>
+                        <input type="text" class="form-control" name="name" 
+                               th:value="${startup.name}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Category <span class="required">*</span></label>
+                        <select class="form-select" name="category" required>
+                            <option value="Technology" th:selected="${startup.category == 'Technology'}">Technology</option>
+                            <option value="Healthcare" th:selected="${startup.category == 'Healthcare'}">Healthcare</option>
+                            <option value="Fintech" th:selected="${startup.category == 'Fintech'}">Fintech</option>
+                            <option value="Education" th:selected="${startup.category == 'Education'}">Education</option>
+                            <option value="Other" th:selected="${startup.category == 'Other'}">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="4" 
+                              th:text="${startup.description}">Description</textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Team Size</label>
+                        <input type="number" class="form-control" name="teamSize" 
+                               th:value="${startup.teamSize}" min="1">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Website</label>
+                        <input type="url" class="form-control" name="website" 
+                               th:value="${startup.website}" placeholder="https://example.com">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        <option th:each="status : ${statuses}" 
+                                th:value="${status}" 
+                                th:text="${status}" 
+                                th:selected="${startup.status == status}"></option>
+                    </select>
+                </div>
+
+                <!-- ✅ ASSIGN MENTOR SECTION -->
+                <div class="mb-3 border-top pt-3">
+                    <h6 class="mb-3"><i class="fas fa-chalkboard-teacher text-primary me-2"></i> Mentor Assignment</h6>
+                    
+                    <!-- Show currently assigned mentor -->
+                    <div th:if="${startup.mentorName != null}" class="mentor-assigned mb-3">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong>Currently Assigned:</strong> <span th:text="${startup.mentorName}"></span>
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-3" 
+                                onclick="removeMentor()">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="form-label">Assign Mentor</label>
+                            <select class="form-select" name="mentorId" id="mentorSelect">
+                                <option value="">-- Select a Mentor --</option>
+                                <!-- ✅ FIX: Show name or expertise as fallback -->
+                                <option th:each="m : ${availableMentors}" 
+                                        th:value="${m.id}" 
+                                        th:text="${m.name != null and m.name != '' ? m.name + ' (' + m.expertise + ') - ' + m.currentStartups + '/' + m.maxStartups + ' startups' : m.expertise + ' (Expert) - ' + m.currentStartups + '/' + m.maxStartups + ' startups'}"
+                                        th:selected="${startup.mentorId == m.id}"></option>
+                            </select>
+                            <small class="text-muted">Only mentors with available capacity are shown</small>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-success w-100" onclick="assignMentor()">
+                                <i class="fas fa-user-plus"></i> Assign Mentor
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Startup
+                    </button>
+                    <a href="/manager/startups" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+
+            <!-- ✅ Hidden form for assign mentor -->
+            <form id="assignMentorForm" th:action="@{/manager/startups/{id}/assign-mentor(id=${startup.id})}" method="post" style="display:none;">
+                <input type="hidden" name="mentorId" id="assignMentorId">
+            </form>
+
+            <!-- ✅ Hidden form for remove mentor -->
+            <form id="removeMentorForm" th:action="@{/manager/startups/{id}/remove-mentor(id=${startup.id})}" method="post" style="display:none;">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+
+<script>
+    function assignMentor() {
+        const select = document.getElementById('mentorSelect');
+        const mentorId = select.value;
+        
+        if (!mentorId) {
+            alert('Please select a mentor to assign!');
+            return;
+        }
+        
+        if (confirm('Are you sure you want to assign this mentor to the startup?')) {
+            document.getElementById('assignMentorId').value = mentorId;
+            document.getElementById('assignMentorForm').submit();
+        }
+    }
+
+    function removeMentor() {
+        if (confirm('Are you sure you want to remove the mentor from this startup?')) {
+            document.getElementById('removeMentorForm').submit();
+        }
+    }
+</script>
+</body>
+</html>

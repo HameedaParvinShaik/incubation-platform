@@ -1,0 +1,67 @@
+Folder PATH listing for volume OS
+Volume serial number is 00000220 A873:A44C
+C:\USERS\DELL\DOWNLOADS\INCUBATION-PLATFORM\INCUBATION-PLATFORM\SRC\MAIN\RESOURCES\TEMPLATES
+¦   error.html
+¦   
++---auth
+¦       login.html
+¦       register.html
+¦       
++---dashboard
+¦       admin.html
+¦       error.html
+¦       evaluator.html
+¦       founder.html
+¦       index.html
+¦       investor.html
+¦       manager.html
+¦       mentor.html
+¦       team-member.html
+¦       
++---funding
+¦       index.html
+¦       
++---layouts
+¦       base.html
+¦       
++---manager
+¦       funding.html
+¦       mentors.html
+¦       reports.html
+¦       startup-details.html
+¦       startups.html
+¦       
++---mentor
+¦       create.html
+¦       edit.html
+¦       list.html
+¦       view.html
+¦       
++---milestones
+¦       create.html
+¦       list.html
+¦       view.html
+¦       
++---profile
+¦       change-password1.html
+¦       edit.html
+¦       index.html
+¦       
++---reports
+¦       index.html
+¦       
++---settings
+¦       index.html
+¦       
++---startup
+¦       create.html
+¦       edit.html
+¦       list.html
+¦       view.html
+¦       
++---team
+¦       list.html
+¦       
++---users
+        list.html
+        

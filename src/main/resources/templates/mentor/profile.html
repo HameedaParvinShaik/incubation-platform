@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Profile - IncubatorHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #2d3436, #0984e3);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .sidebar .brand span {
+            color: #ffd700;
+        }
+        .sidebar .brand p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar .nav-link .badge {
+            margin-left: auto;
+        }
+        .sidebar hr {
+            border-color: rgba(255,255,255,0.1);
+            margin: 10px 20px;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0984e3;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .card-custom {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+        }
+        .card-custom .card-body {
+            padding: 25px;
+        }
+        .card-custom .card-footer {
+            background: transparent;
+            border-top: 1px solid #e2e8f0;
+            padding: 20px 25px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d3436, #0984e3);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #64748b;
+            width: 120px;
+        }
+        .detail-value {
+            font-weight: 500;
+        }
+        .detail-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            .sidebar .brand h3,
+            .sidebar .brand p,
+            .sidebar .nav-link span {
+                display: none;
+            }
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+                margin: 3px 8px;
+            }
+            .sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            .main-content {
+                margin-left: 70px;
+                padding: 15px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .detail-label {
+                width: 80px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Mentor Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/mentor/dashboard">
+            <i class="fas fa-th-large"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="/mentor/mentees">
+            <i class="fas fa-users"></i> <span>My Mentees</span>
+        </a>
+        <a class="nav-link" href="/mentor/sessions">
+            <i class="fas fa-calendar"></i> <span>Sessions</span>
+        </a>
+        <a class="nav-link" href="/mentor/reviews">
+            <i class="fas fa-star"></i> <span>Reviews</span>
+        </a>
+        <a class="nav-link" href="/mentor/milestones">
+            <i class="fas fa-flag-checkered"></i> <span>Milestones</span>
+        </a>
+        <hr>
+        <a class="nav-link active" href="/mentor/profile">
+            <i class="fas fa-user-circle"></i> <span>Profile</span>
+        </a>
+        <a class="nav-link text-danger" href="/logout" onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-user-circle text-primary"></i> Mentor Profile</h4>
+            <small class="text-muted">Manage your profile</small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-success me-2">MENTOR</span>
+            <div class="avatar" th:text="${user != null ? #strings.substring(user.firstName, 0, 1).toUpperCase() : 'M'}">M</div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card-custom">
+        <div class="card-header bg-primary text-white">
+            <span><i class="fas fa-user-circle me-2"></i> Profile Information</span>
+            <a href="/mentor/profile/edit" class="btn btn-light btn-sm"><i class="fas fa-edit"></i> Edit Profile</a>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <div class="profile-avatar" th:text="${user != null ? #strings.substring(user.firstName, 0, 1).toUpperCase() : 'M'}">M</div>
+                    <h5 th:text="${user != null ? user.firstName + ' ' + user.lastName : 'Mentor User'}">Mentor User</h5>
+                    <span class="badge bg-success">Active</span>
+                    <span class="badge bg-info ms-2" th:text="${mentor != null && mentor.experienceYears != null ? mentor.experienceYears + ' years' : 'N/A'}">N/A</span>
+                </div>
+                <div class="col-md-8">
+                    <h5>Personal Information</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="detail-row">
+                                <span class="detail-label">First Name</span>
+                                <span class="detail-value" th:text="${user != null ? user.firstName : 'N/A'}">John</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Last Name</span>
+                                <span class="detail-value" th:text="${user != null ? user.lastName : 'N/A'}">Doe</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value" th:text="${user != null ? user.email : 'N/A'}">john@example.com</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Phone</span>
+                                <span class="detail-value" th:text="${user != null && user.phoneNumber != null ? user.phoneNumber : 'N/A'}">N/A</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-row" th:if="${mentor != null}">
+                                <span class="detail-label">Expertise</span>
+                                <span class="detail-value" th:text="${mentor.expertise != null ? mentor.expertise : 'N/A'}">Java</span>
+                            </div>
+                            <div class="detail-row" th:if="${mentor != null}">
+                                <span class="detail-label">Company</span>
+                                <span class="detail-value" th:text="${mentor.company != null ? mentor.company : 'N/A'}">Google</span>
+                            </div>
+                            <div class="detail-row" th:if="${mentor != null}">
+                                <span class="detail-label">Designation</span>
+                                <span class="detail-value" th:text="${mentor.designation != null ? mentor.designation : 'N/A'}">Senior Developer</span>
+                            </div>
+                            <div class="detail-row" th:if="${mentor != null}">
+                                <span class="detail-label">Status</span>
+                                <span class="detail-value">
+                                    <span th:if="${mentor.available != null && mentor.available}" class="badge bg-success">Available</span>
+                                    <span th:if="${mentor.available != null && !mentor.available}" class="badge bg-danger">Busy</span>
+                                    <span th:if="${mentor.available == null}" class="badge bg-secondary">Unknown</span>
+                                </span>
+                            </div>
+                            <div class="detail-row" th:if="${mentor != null}">
+                                <span class="detail-label">Rating</span>
+                                <span class="detail-value">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <span th:text="${mentor.rating != null ? mentor.rating : '0.0'}">0.0</span>
+                                    <span class="text-muted small" th:text="'(' + ${mentor.totalReviews != null ? mentor.totalReviews : 0} + ' reviews)'">(0 reviews)</span>
+                                </span>
+                            </div>
+                            <div class="detail-row" th:if="${mentor == null}">
+                                <span class="detail-label" colspan="2">No mentor profile found. Please contact admin.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3" th:if="${mentor != null && mentor.bio != null}">
+                        <div class="col-12">
+                            <h6>Bio</h6>
+                            <div class="p-3 bg-light rounded" th:text="${mentor.bio}">Bio description</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="/mentor/dashboard" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

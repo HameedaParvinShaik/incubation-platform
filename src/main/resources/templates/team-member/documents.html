@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents - IncubatorHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 { font-weight: 700; font-size: 1.5rem; }
+        .sidebar .brand span { color: #f1c40f; }
+        .sidebar .brand p { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i { margin-right: 12px; width: 20px; text-align: center; }
+        .sidebar .nav-link .badge { margin-left: auto; }
+        .sidebar hr { border-color: rgba(255,255,255,0.1); margin: 10px 20px; }
+        
+        .main-content { margin-left: 260px; padding: 30px; min-height: 100vh; }
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .user-info { display: flex; align-items: center; gap: 15px; }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .card-custom {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-custom .card-body { padding: 25px; }
+        
+        .doc-item {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .doc-item:hover {
+            border-color: #4f46e5;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        .doc-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .brand h3, .sidebar .brand p, .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 12px; margin: 3px 8px; }
+            .sidebar .nav-link i { margin-right: 0; font-size: 1.2rem; }
+            .main-content { margin-left: 70px; padding: 15px; }
+            .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Team Member Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/team-member/dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a class="nav-link" href="/team-member/tasks"><i class="fas fa-tasks"></i> My Tasks</a>
+        <a class="nav-link" href="/team-member/team"><i class="fas fa-users"></i> Team</a>
+        <a class="nav-link active" href="/team-member/documents"><i class="fas fa-file-alt"></i> Documents</a>
+        <hr>
+        <a class="nav-link" href="/team-member/profile"><i class="fas fa-user-circle"></i> Profile</a>
+        <a class="nav-link text-danger" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-file-alt text-primary"></i> Documents</h4>
+            <small class="text-muted">Welcome, <span th:text="${userEmail}">User</span></small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-primary me-2">TEAM</span>
+            <div class="avatar" th:text="${#strings.substring(userEmail, 0, 1).toUpperCase()}">U</div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="card-custom">
+        <div class="card-header">
+            <span><i class="fas fa-upload me-2 text-primary"></i> Upload Document</span>
+        </div>
+        <div class="card-body">
+            <form method="post" th:action="@{/team-member/documents/upload}" enctype="multipart/form-data">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="file" class="form-control" name="file" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="folder" placeholder="Folder name (optional)">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="status">
+                            <option value="DRAFT">Draft</option>
+                            <option value="SHARED">Shared</option>
+                            <option value="REVIEW">Review</option>
+                            <option value="APPROVED">Approved</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-upload"></i> Upload
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="card-custom">
+        <div class="card-header">
+            <span><i class="fas fa-list me-2 text-primary"></i> Recent Documents</span>
+            <span class="badge bg-primary" th:text="${#lists.size(documents)} + ' files'">0 files</span>
+        </div>
+        <div class="card-body">
+            <div th:if="${#lists.isEmpty(documents)}" class="text-center text-muted py-4">
+                <i class="fas fa-file-alt fa-3x d-block mb-2"></i>
+                <p>No documents uploaded yet. Upload your first document!</p>
+            </div>
+            <div th:each="doc : ${documents}" class="doc-item">
+                <div class="doc-icon" th:style="'background: ' + ${#lists.list('e8f5e9', 'e3f2fd', 'fce4ec', 'fff3e0', 'f3e5f5')[doc.id % 5]} + ';'">
+                    <i class="fas" th:classappend="${#strings.endsWith(doc.fileName, '.pdf') ? 'fa-file-pdf text-danger' : 
+                                                       #strings.endsWith(doc.fileName, '.docx') ? 'fa-file-word text-primary' :
+                                                       #strings.endsWith(doc.fileName, '.xlsx') ? 'fa-file-excel text-success' :
+                                                       #strings.endsWith(doc.fileName, '.png') ? 'fa-file-image text-info' :
+                                                       #strings.endsWith(doc.fileName, '.jpg') ? 'fa-file-image text-info' :
+                                                       #strings.endsWith(doc.fileName, '.zip') ? 'fa-file-archive text-warning' : 'fa-file-alt'"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong th:text="${doc.fileName}">File Name</strong>
+                            <div class="text-muted small">
+                                <span th:text="${#strings.substringAfter(doc.fileName, '_')}">Name</span>
+                                <span class="mx-1">•</span>
+                                <span th:text="${#numbers.formatDecimal(doc.fileSize / 1024 / 1024, 1, 2)} + ' MB'">1.2 MB</span>
+                                <span class="mx-1">•</span>
+                                <span th:text="${#temporals.format(doc.createdAt, 'dd MMM yyyy')}">Date</span>
+                                <span class="mx-1">•</span>
+                                <span th:if="${doc.folder}" class="badge bg-secondary" th:text="${doc.folder}">Folder</span>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <span th:switch="${doc.status}" class="badge">
+                                <span th:case="'DRAFT'" class="badge bg-secondary">Draft</span>
+                                <span th:case="'SHARED'" class="badge bg-info">Shared</span>
+                                <span th:case="'REVIEW'" class="badge bg-warning text-dark">Review</span>
+                                <span th:case="'APPROVED'" class="badge bg-success">Approved</span>
+                                <span th:case="*" class="badge bg-secondary" th:text="${doc.status}">Unknown</span>
+                            </span>
+                            <a th:href="@{/team-member/documents/download/{id}(id=${doc.id})}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <form th:action="@{/team-member/documents/{id}/delete(id=${doc.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this document?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Edit User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 { font-weight: 700; font-size: 1.5rem; }
+        .sidebar .brand span { color: #f1c40f; }
+        .sidebar .brand p { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i { margin-right: 12px; width: 20px; text-align: center; }
+        .sidebar .nav-link .badge { margin-left: auto; }
+        .sidebar hr { border-color: rgba(255,255,255,0.1); margin: 10px 20px; }
+        
+        .main-content { margin-left: 260px; padding: 30px; min-height: 100vh; }
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .user-info { display: flex; align-items: center; gap: 15px; }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .card-custom {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-custom .card-body { padding: 25px; }
+        .form-label { font-weight: 500; }
+        .form-control, .form-select { border-radius: 10px; }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .brand h3, .sidebar .brand p, .sidebar .nav-link span { display: none; }
+            .sidebar .nav-link { justify-content: center; padding: 12px; margin: 3px 8px; }
+            .sidebar .nav-link i { margin-right: 0; font-size: 1.2rem; }
+            .main-content { margin-left: 70px; padding: 15px; }
+            .topbar { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Admin Sidebar -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Admin Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/admin/dashboard"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+        <a class="nav-link active" href="/admin/users"><i class="fas fa-users"></i> <span>Users</span></a>
+        <a class="nav-link" href="/admin/startups"><i class="fas fa-building"></i> <span>Startups</span></a>
+        <a class="nav-link" href="/admin/mentors"><i class="fas fa-chalkboard-teacher"></i> <span>Mentors</span></a>
+        <a class="nav-link" href="/admin/funding"><i class="fas fa-hand-holding-usd"></i> <span>Funding</span></a>
+        <a class="nav-link" href="/admin/reports"><i class="fas fa-file-alt"></i> <span>Reports</span></a>
+        <a class="nav-link" href="/admin/settings"><i class="fas fa-cog"></i> <span>Settings</span></a>
+        <hr>
+        <a class="nav-link" href="/profile"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
+        <a class="nav-link text-danger" href="/logout" onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-edit text-warning"></i> Edit User</h4>
+            <small class="text-muted">Welcome, <span th:text="${userEmail}"></span></small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-danger me-2">ADMIN</span>
+            <div class="avatar" th:text="${#strings.substring(userEmail, 0, 1).toUpperCase()}">A</div>
+        </div>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card-custom">
+        <div class="card-header bg-warning">
+            <span><i class="fas fa-edit me-2"></i> Edit User</span>
+            <a href="/admin/users" class="btn btn-light btn-sm">
+                <i class="fas fa-arrow-left"></i> Back to Users
+            </a>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/users/update/{id}(id=${user.id})}" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" name="firstName" th:value="${user.firstName}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" name="lastName" th:value="${user.lastName}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" th:value="${user.email}" disabled>
+                        <small class="text-muted">Email cannot be changed</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" name="phoneNumber" th:value="${user.phoneNumber}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" name="role" required>
+                            <option th:each="role : ${allRoles}" 
+                                    th:value="${#strings.replace(role.name, 'ROLE_', '')}"
+                                    th:selected="${user.roles.contains(role)}"
+                                    th:text="${#strings.replace(role.name, 'ROLE_', '')}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="isActive">
+                            <option th:value="true" th:selected="${user.isActive}">Active</option>
+                            <option th:value="false" th:selected="${!user.isActive}">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update User
+                        </button>
+                        <a href="/admin/users" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

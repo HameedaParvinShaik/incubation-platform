@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - IncubatorHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        .sidebar .brand span {
+            color: #f1c40f;
+        }
+        .sidebar .brand p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar .nav-link .badge {
+            margin-left: auto;
+        }
+        .sidebar hr {
+            border-color: rgba(255,255,255,0.1);
+            margin: 10px 20px;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+        
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .topbar .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4f46e5;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .card-custom {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+        }
+        .card-custom .card-header {
+            background: transparent;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 25px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-custom .card-body {
+            padding: 25px;
+        }
+        
+        .stat-card {
+            border-left: 4px solid #4f46e5;
+            background: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            height: 100%;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .stat-card .label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .stat-card .icon {
+            font-size: 2.5rem;
+            opacity: 0.3;
+        }
+        
+        .report-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-color: #4f46e5;
+        }
+        .report-card .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        
+        .text-purple {
+            color: #9b59b6;
+        }
+        .bg-purple {
+            background: #9b59b6;
+        }
+        .bg-opacity-10 {
+            opacity: 0.1;
+        }
+        .btn-outline-purple {
+            color: #9b59b6;
+            border-color: #9b59b6;
+        }
+        .btn-outline-purple:hover {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            .sidebar .brand h3,
+            .sidebar .brand p,
+            .sidebar .nav-link span {
+                display: none;
+            }
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+                margin: 3px 8px;
+            }
+            .sidebar .nav-link i {
+                margin-right: 0;
+                font-size: 1.2rem;
+            }
+            .main-content {
+                margin-left: 70px;
+                padding: 15px;
+            }
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar - ADMIN -->
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p>Admin Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/dashboard">
+            <i class="fas fa-th-large"></i> <span>Dashboard</span>
+        </a>
+        <a class="nav-link" href="/users">
+            <i class="fas fa-users"></i> <span>Users</span>
+            <span class="badge bg-primary" th:text="${totalUsers != null ? totalUsers : 0}">0</span>
+        </a>
+        <a class="nav-link" href="/startups">
+            <i class="fas fa-building"></i> <span>Startups</span>
+            <span class="badge bg-warning text-dark" th:text="${pendingStartups != null ? pendingStartups : 0}">0</span>
+        </a>
+        <a class="nav-link" href="/mentor/admin-list">
+            <i class="fas fa-chalkboard-teacher"></i> <span>Mentors</span>
+            <span class="badge bg-success" th:text="${totalMentors != null ? totalMentors : 0}">0</span>
+        </a>
+        <a class="nav-link" href="/funding">
+            <i class="fas fa-hand-holding-usd"></i> <span>Funding</span>
+        </a>
+        <a class="nav-link active" href="/reports">
+            <i class="fas fa-file-alt"></i> <span>Reports</span>
+        </a>
+        <a class="nav-link" href="/settings">
+            <i class="fas fa-cog"></i> <span>Settings</span>
+        </a>
+        <hr>
+        <a class="nav-link" href="/profile">
+            <i class="fas fa-user-circle"></i> <span>Profile</span>
+        </a>
+        <a class="nav-link text-danger" href="/logout" onclick="return confirm('Are you sure you want to logout?')">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-file-alt text-primary"></i> Reports & Analytics</h4>
+            <small class="text-muted">Welcome, <span th:text="${userEmail}"></span></small>
+        </div>
+        <div class="user-info">
+            <span class="badge bg-danger me-2">ADMIN</span>
+            <div class="avatar" th:text="${#strings.substring(userEmail, 0, 1).toUpperCase()}">A</div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card" style="border-color: #3498db;" onclick="window.location.href='/startups'">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="label">Total Startups</div>
+                        <div class="number" th:text="${totalStartups != null ? totalStartups : 0}">0</div>
+                    </div>
+                    <div class="icon text-primary"><i class="fas fa-building"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card" style="border-color: #2ecc71;" onclick="window.location.href='/users'">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="label">Total Users</div>
+                        <div class="number" th:text="${totalUsers != null ? totalUsers : 0}">0</div>
+                    </div>
+                    <div class="icon text-success"><i class="fas fa-users"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card" style="border-color: #9b59b6;" onclick="window.location.href='/mentor/list'">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="label">Total Mentors</div>
+                        <div class="number" th:text="${totalMentors != null ? totalMentors : 0}">0</div>
+                    </div>
+                    <div class="icon text-purple"><i class="fas fa-chalkboard-teacher"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card" style="border-color: #f39c12;" onclick="window.location.href='/funding'">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="label">Funding Requests</div>
+                        <div class="number" th:text="${totalFunding != null ? totalFunding : 0}">0</div>
+                    </div>
+                    <div class="icon text-warning"><i class="fas fa-hand-holding-usd"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row 2 - More Details -->
+    <div class="row">
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #2ecc71;">
+                <div><div class="label">Approved</div><div class="number" th:text="${approvedStartups != null ? approvedStartups : 0}">0</div></div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #f39c12;">
+                <div><div class="label">Pending</div><div class="number" th:text="${pendingStartups != null ? pendingStartups : 0}">0</div></div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #e74c3c;">
+                <div><div class="label">Rejected</div><div class="number" th:text="${rejectedStartups != null ? rejectedStartups : 0}">0</div></div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #3498db;">
+                <div><div class="label">Active</div><div class="number" th:text="${activeStartups != null ? activeStartups : 0}">0</div></div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #1abc9c;">
+                <div><div class="label">Completed</div><div class="number" th:text="${completedStartups != null ? completedStartups : 0}">0</div></div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="stat-card" style="border-color: #f1c40f;">
+                <div><div class="label">Funding Approved</div><div class="number" th:text="${approvedFunding != null ? approvedFunding : 0}">0</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Reports -->
+    <div class="card-custom">
+        <div class="card-header">
+            <span><i class="fas fa-file-pdf me-2 text-primary"></i> Quick Reports</span>
+            <span class="badge bg-secondary">Click Download to Export CSV</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="report-card card p-3 text-center h-100">
+                        <div class="icon-circle bg-primary bg-opacity-10 text-primary mx-auto mb-3">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h6>Startup Report</h6>
+                        <small class="text-muted">Total: <strong th:text="${totalStartups != null ? totalStartups : 0}">0</strong> startups</small>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="downloadReport('startups')">
+                                <i class="fas fa-download"></i> Download CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="report-card card p-3 text-center h-100">
+                        <div class="icon-circle bg-success bg-opacity-10 text-success mx-auto mb-3">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h6>User Report</h6>
+                        <small class="text-muted">Total: <strong th:text="${totalUsers != null ? totalUsers : 0}">0</strong> users</small>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-success" onclick="downloadReport('users')">
+                                <i class="fas fa-download"></i> Download CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="report-card card p-3 text-center h-100">
+                        <div class="icon-circle bg-warning bg-opacity-10 text-warning mx-auto mb-3">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <h6>Funding Report</h6>
+                        <small class="text-muted">Total: <strong th:text="${totalFunding != null ? totalFunding : 0}">0</strong> requests</small>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-warning" onclick="downloadReport('funding')">
+                                <i class="fas fa-download"></i> Download CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="report-card card p-3 text-center h-100">
+                        <div class="icon-circle bg-purple bg-opacity-10 text-purple mx-auto mb-3">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h6>Mentor Report</h6>
+                        <small class="text-muted">Total: <strong th:text="${totalMentors != null ? totalMentors : 0}">0</strong> mentors</small>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-purple" onclick="downloadReport('mentors')">
+                                <i class="fas fa-download"></i> Download CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+
+<script>
+function downloadReport(type) {
+    const url = `/reports/${type}/download`;
+    window.location.href = url;
+}
+
+console.log('✅ Admin Reports page loaded successfully!');
+</script>
+</body>
+</html>

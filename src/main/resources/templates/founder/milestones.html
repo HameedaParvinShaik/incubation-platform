@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Milestones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            position: fixed;
+            width: 260px;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+        .sidebar .brand {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar .brand h3 { font-weight: 700; }
+        .sidebar .brand span { color: #00d2ff; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 25px;
+            border-radius: 10px;
+            margin: 5px 15px;
+            transition: 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link i { margin-right: 12px; width: 20px; }
+        .main-content { margin-left: 260px; padding: 30px; }
+        .topbar {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-custom { background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: none; }
+        .milestone-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+            background: white;
+        }
+        .milestone-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #4f46e5; }
+        .btn-add { background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; }
+        .btn-add:hover { background: linear-gradient(135deg, #5a67d8, #6b3fa0); color: white; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">
+        <h3><i class="fas fa-rocket"></i> Incubator<span>Hub</span></h3>
+        <p class="text-muted small">Founder Panel</p>
+    </div>
+    <nav class="nav flex-column mt-3">
+        <a class="nav-link" href="/dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a class="nav-link" href="/founder/startups"><i class="fas fa-building"></i> My Startups</a>
+        <a class="nav-link" href="/startups/create"><i class="fas fa-plus-circle"></i> Create Startup</a>
+        <a class="nav-link" href="/founder/team"><i class="fas fa-users"></i> Team</a>
+        <a class="nav-link active" href="/founder/milestones"><i class="fas fa-flag-checkered"></i> Milestones</a>
+        <hr>
+        <a class="nav-link" href="/founder/profile"><i class="fas fa-user"></i> Profile</a>
+        <a class="nav-link text-danger" href="/auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div>
+            <h4 class="mb-0"><i class="fas fa-flag-checkered text-primary"></i> Milestones</h4>
+            <small class="text-muted">Welcome, <span th:text="${userName}">Founder</span></small>
+        </div>
+        <div>
+            <span class="badge bg-warning me-2">FOUNDER</span>
+            <span th:text="${userEmail}"></span>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h6>Total</h6>
+                    <h3 class="mb-0" th:text="${totalCount}">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h6>Completed</h6>
+                    <h3 class="mb-0" th:text="${completedCount}">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h6>Pending</h6>
+                    <h3 class="mb-0" th:text="${pendingCount}">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h6>Progress</h6>
+                    <h3 class="mb-0" th:text="${totalCount > 0 ? (completedCount * 100 / totalCount) : 0} + '%'">0%</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Button -->
+    <div class="mb-3">
+        <a href="/founder/milestones/add" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Milestone
+        </a>
+    </div>
+
+    <!-- Milestones List -->
+    <div class="card-custom">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i> My Milestones</h5>
+        </div>
+        <div class="card-body">
+            
+            <!-- ✅ LOOP THROUGH MILESTONES -->
+            <div th:if="${milestones != null and !#lists.isEmpty(milestones)}">
+                <div th:each="milestone : ${milestones}" class="milestone-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1" th:text="${milestone.title}">Title</h6>
+                            <p class="text-muted small mb-1" th:text="${milestone.description}">Description</p>
+                            <div>
+                                <!-- ✅ SIMPLIFIED STATUS - Using th:switch -->
+                                <span th:switch="${milestone.status}">
+                                    <span th:case="'COMPLETED'" class="badge bg-success">✅ COMPLETED</span>
+                                    <span th:case="'IN_PROGRESS'" class="badge bg-primary">⏳ IN PROGRESS</span>
+                                    <span th:case="'PENDING'" class="badge bg-warning text-dark">⏳ PENDING</span>
+                                    <span th:case="'OVERDUE'" class="badge bg-danger">⚠️ OVERDUE</span>
+                                    <span th:case="*" class="badge bg-secondary">UNKNOWN</span>
+                                </span>
+                                
+                                <!-- Priority Badge -->
+                                <span th:switch="${milestone.priority}">
+                                    <span th:case="'HIGH'" class="badge bg-danger">HIGH</span>
+                                    <span th:case="'MEDIUM'" class="badge bg-warning text-dark">MEDIUM</span>
+                                    <span th:case="'LOW'" class="badge bg-info">LOW</span>
+                                    <span th:case="*" class="badge bg-secondary">MEDIUM</span>
+                                </span>
+                                
+                                <!-- Progress -->
+                                <span class="badge bg-secondary" th:text="${milestone.progressPercentage} + '%'">0%</span>
+                                
+                                <!-- Due Date -->
+                                <span th:if="${milestone.dueDate}" class="text-muted small ms-2">
+                                    <i class="far fa-calendar-alt"></i> Due: <span th:text="${milestone.dueDate}"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <!-- Complete Button -->
+                            <a th:if="${milestone.status != 'COMPLETED'}" 
+                               th:href="@{/founder/milestones/complete/{id}(id=${milestone.id})}" 
+                               class="btn btn-sm btn-success" title="Mark Complete">
+                                <i class="fas fa-check"></i>
+                            </a>
+                            <!-- Delete Button -->
+                            <a th:href="@{/founder/milestones/delete/{id}(id=${milestone.id})}" 
+                               class="btn btn-sm btn-danger" title="Delete"
+                               onclick="return confirm('Are you sure?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Milestones -->
+            <div th:if="${milestones == null or #lists.isEmpty(milestones)}" class="text-center py-5">
+                <i class="fas fa-flag-checkered fa-3x text-muted mb-3"></i>
+                <h5>No Milestones Yet</h5>
+                <p class="text-muted">Track your startup's progress with milestones.</p>
+                <a href="/founder/milestones/add" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Milestone
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
